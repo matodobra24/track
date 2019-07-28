@@ -155,7 +155,7 @@ mainQuery.find().then((results) => {
       console.log(totalOutTime);
 
 
-      $('tbody#information').append('<tr><th>'+ outDate +'</th><td>'+ outTime +'</td><td>'+ inTime +'</td><td>'+ timeBetween +'</td></tr>');
+      $('tbody#information').append('<tr><th scope="row">'+ outDate +'</th><td>'+ outTime +'</td><td>'+ inTime +'</td><td>'+ timeBetween +'</td></tr>');
 
       console.log("is between")
 
@@ -329,3 +329,17 @@ function exportTableToCSV(filename) {
     // Download CSV file
     downloadCSV(csv.join("\n"), filename);
 }
+
+$( function() {
+  $('#button').datepicker()
+  .on('changeDate', function(ev){
+        $('#button').datepicker('hide');
+        var buttonVal = ev.date.valueOf();
+        buttonVal = moment(buttonVal).format("MMM DD, YYYY");
+        selectedDate = buttonVal;
+        console.log(buttonVal);
+
+        loadData(buttonVal);
+
+    });
+});

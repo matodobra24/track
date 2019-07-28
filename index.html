@@ -142,28 +142,7 @@
         </div>
       </div>
 
-      <script>
 
-      $( function() {
-        $('#button').datepicker()
-      	.on('changeDate', function(ev){
-              $('#button').datepicker('hide');
-              var buttonVal = ev.date.valueOf();
-              buttonVal = moment(buttonVal).format("MMM DD, YYYY");
-              selectedDate = buttonVal;
-              console.log(buttonVal);
-
-              loadData(buttonVal);
-
-          });
-      });
-
-      document.getElementById("button").addEventListener("click", function(){
-
-        console.log("Selected Date: " + this.getAttribute('data-date'));
-      });
-
-</script>
 <div class="row">
 <div class="col-sm-2">
       <label>Choose Date:</label>

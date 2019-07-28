@@ -57,7 +57,7 @@ today = moment(today + " " + startTime).format("MMM DD, YYYY HH:mm:ss");
 
 console.log("Selected Day: " + selectedDate +", " + "Today is :" + today);
 
-  if (moment(selectedDate).isSame(today, 'day') || moment(start).isBetween(shiftStart , shiftEnd)) {
+  if (moment(selectedDate).isSame(today, 'day') || moment(now).isBetween(shiftStart , shiftEnd)) {
     //msday = time since 0600.
 
     msDay = moment(now).diff(today);
@@ -171,6 +171,7 @@ mainQuery.find().then((results) => {
 
   //The percentage out is the total running time
   var percentOut = totalOutTime/msDay;
+
   var percentIn = 100 - percentOut;
 
   //NEED TO CONVERT MSDAY TO HOURS TO DO CALCULATIONS
@@ -207,8 +208,9 @@ mainQuery.find().then((results) => {
 
 
   //Calculates display Percent
-  var percentOutDisplay = Math.round(percentOut * 100)/ 100;
+  var percentOutDisplay = Math.round(percentOut * 100) / 100;
   percentOutDisplay = percentOutDisplay * 100;
+  percentOutDisplay = Math.round(percentOutDisplay * 100) / 100;
 
   document.getElementById("utilization").innerHTML = "Utilization: " + percentOutDisplay;
 
@@ -222,10 +224,6 @@ mainQuery.find().then((results) => {
   graphChartOut = percentOut * 360;
   graphChartIn = 360 - graphChartOut;
 
-  // document.getElementById("dayUtilization").innerHTML = "Todays Utilization: " + percentOutDisplay;
-  // document.getElementById("timeSpentOut").innerHTML = "Time Spent Out: " + displayHoursOut;
-  // document.getElementById("timeSpentIn").innerHTML = "Time Spent In: " + displayHoursIn;
-  // document.getElementById("tripsOutOfQuarters").innerHTML = "Trips Out Of Quarters " + tripsOutOfQuarters;
 
 console.log(percentOutDisplay);
 

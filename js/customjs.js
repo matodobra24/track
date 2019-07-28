@@ -11,6 +11,8 @@ Parse.serverURL = "https://parseapi.back4app.com/";
 
 function loadData(date) {
 
+  var now = moment();
+
   var dateClicked = false //use this to set if the date has been clicked to reset the chart/table elements
 
   var totalOutTime = 0;
@@ -22,7 +24,21 @@ function loadData(date) {
 
   var msDay = moment.duration(1, 'day').asMilliseconds();
 
+
   var startTime = "06:00:00";
+
+  var	selectedDate = moment(date).format("MMM DD, YYYY HH:mm:ss");
+  var addedDay = moment(selectedDate).add(1, 'day').format("MMM DD, YYYY");
+
+  var searchDate = moment(selectedDate).format("MMM DD, YYYY");
+  var addedSearchDay = moment(searchDate).add(1, 'day').format("MMM DD, YYYY");
+
+  var shiftStart = searchDate + " " + startTime;
+  var shiftEnd = moment(addedDay + " " + startTime).format("MMM DD, YYYY HH:mm:ss");
+
+  var inTimeArray = [];
+  var outTimeArray = [];
+
 
   var buttonDate = document.getElementById("button").getAttribute("data-date");
   console.log("The Date is: " + buttonDate);
@@ -33,15 +49,30 @@ function loadData(date) {
     tableInformation.innerHTML = "";
   };
 
-var	selectedDate = moment(date).format("MMM DD, YYYY HH:mm:ss");
-var addedDay = moment(selectedDate).add(1, 'day').format("MMM DD, YYYY");
+
+
+var today = moment().format("MMM DD, YYYY");
+console.log(today);
+today = moment(today + " " + startTime).format("MMM DD, YYYY HH:mm:ss");
+
+console.log("Selected Day: " + selectedDate +", " + "Today is :" + today);
+
+  if (moment(selectedDate).isSame(today, 'day') || moment(start).isBetween(shiftStart , shiftEnd)) {
+    //msday = time since 0600.
+
+    msDay = moment(now).diff(today);
+
+    console.log("time till now" + msDay);
+
+  } else {
+
+    console.log("The selected day is NOT TODAY");
+
+  };
 
 const MyCustomClass = Parse.Object.extend('InOutStatus');
 const query = new Parse.Query(MyCustomClass);
 const query2 = new Parse.Query(MyCustomClass);
-
-var searchDate = moment(selectedDate).format("MMM DD, YYYY");
-var addedSearchDay = moment(searchDate).add(1, 'day').format("MMM DD, YYYY");
 
 query2.equalTo("date", addedSearchDay);
 query2.equalTo("unit", "6301");
@@ -65,6 +96,12 @@ mainQuery.find().then((results) => {
     var reason = results[i].get("reason");
     var inDate = results[i].get("inDate");
 
+    //if inTime + Date are invalid, input time till now.
+
+    if (inDate == "" && inTime == "") {
+      console.log("THESE TIMES ARE INVALID, INTIME/INDATE");
+    }
+
     //USE MOMENT.ISBETWEEN() FUNCTION
 
     //Captures the Start & the End time of each result in the row.
@@ -78,9 +115,31 @@ mainQuery.find().then((results) => {
     console.log(searchDate + " " + startTime);
     console.log(addedDay + " " + startTime);
 
-    // if( moment(start).isBetween(searchDate + " " + startTime , addedDay + " " + "00:00:00") == true) {
-    if( moment(start).isBetween(searchDate + " " + startTime , addedDay + " " + startTime) == true) {
 
+    console.log("End Time: "+ shiftEnd);
+
+
+    // if( moment(start).isBetween(searchDate + " " + startTime , addedDay + " " + "00:00:00") == true) {
+    if( moment(start).isBetween(shiftStart , shiftEnd) == true) {
+
+      if (inTimeArray.length == 0) {
+        inTimeArray.push(shiftStart);
+      };
+
+      console.log("I: " + i + "results Length: " + results.length);
+
+      inTimeArray.push(end);
+
+      outTimeArray.push(start);
+
+      if (outTimeArray.length ==  results.length) {
+
+          outTimeArray.push(shiftEnd);
+
+        console.log("did make it to loop");
+      };
+
+      console.log("Out Time Array: " + inTimeArray.length + "In time arrary: " + results.length )
 
       var milliseconds = moment(end).diff(start, 'milliseconds');
       console.log(milliseconds);
@@ -114,8 +173,11 @@ mainQuery.find().then((results) => {
   var percentOut = totalOutTime/msDay;
   var percentIn = 100 - percentOut;
 
+  //NEED TO CONVERT MSDAY TO HOURS TO DO CALCULATIONS
+  var multiplier = moment.duration(msDay).asHours();
+
   //Calculate percentage into hours (may have to update 24 to accomidate Hold Over)
-  var hoursOut = percentOut * 24;
+  var hoursOut = percentOut * multiplier;
   hoursOut = Math.round(hoursOut * 100) / 100;
   var displayHoursOut = timeFormatter(hoursOut);
 
@@ -137,7 +199,7 @@ mainQuery.find().then((results) => {
 
   //IMPORTANT - NEED TO FIX DISPLAY FOR HOURS/TIME, INCORRECT
   var dailyPercentIn = 1 - percentOut;
-  var hoursIn = dailyPercentIn * 24;
+  var hoursIn = dailyPercentIn * multiplier;
   hoursIn = Math.round(hoursIn * 100) / 100;
   var displayHoursIn = timeFormatter(hoursIn);
 
@@ -177,6 +239,9 @@ console.log(percentOutDisplay);
     console.log("has canvas");
 
   }
+
+  console.log(inTimeArray);
+  console.log(outTimeArray);
 
   var data = [
     {

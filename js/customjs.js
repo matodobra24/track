@@ -26,14 +26,14 @@ function loadData(date) {
 
   var startTime = "06:00:00";
 
-  var selectedDate = moment(date).format("MMM DD, YYYY HH:mm:ss");
-  var addedDay = moment(selectedDate).add(1, 'day').format("MMM DD, YYYY");
+  var selectedDate = moment(date).format("MMM D, YYYY HH:mm:ss");
+  var addedDay = moment(selectedDate).add(1, 'day').format("MMM D, YYYY");
 
-  var searchDate = moment(selectedDate).format("MMM DD, YYYY");
-  var addedSearchDay = moment(searchDate).add(1, 'day').format("MMM DD, YYYY");
+  var searchDate = moment(selectedDate).format("MMM D, YYYY");
+  var addedSearchDay = moment(searchDate).add(1, 'day').format("MMM D, YYYY");
 
   var shiftStart = searchDate + " " + startTime;
-  var shiftEnd = moment(addedDay + " " + startTime).format("MMM DD, YYYY HH:mm:ss");
+  var shiftEnd = moment(addedDay + " " + startTime).format("MMM D, YYYY HH:mm:ss");
 
   var inTimeArray = [];
   var outTimeArray = [];
@@ -50,9 +50,9 @@ function loadData(date) {
 
 
 
-  var today = moment().format("MMM DD, YYYY");
+  var today = moment().format("MMM D, YYYY");
   console.log(today);
-  today = moment(today + " " + startTime).format("MMM DD, YYYY HH:mm:ss");
+  today = moment(today + " " + startTime).format("MMM D, YYYY HH:mm:ss");
 
   console.log("Selected Day: " + selectedDate + ", " + "Today is :" + today);
 
@@ -86,6 +86,9 @@ function loadData(date) {
   const query = new Parse.Query(MyCustomClass);
   const query2 = new Parse.Query(MyCustomClass);
 
+  console.log("Searched day, " + searchDate)
+  console.log("Added day, " + addedSearchDay)
+
   query2.equalTo("date", addedSearchDay);
   query2.equalTo("unit", "6301");
   query.equalTo("unit", "6301");
@@ -97,7 +100,7 @@ function loadData(date) {
 
   mainQuery.find().then((results) => {
 
-    console.log(results.length);
+    console.log("There are " + results.length + "Results");
     tripsOutOfQuarters = results.length;
 
     for (i in results) {
@@ -118,8 +121,8 @@ function loadData(date) {
 
       //Captures the Start & the End time of each result in the row.
 
-      var start = moment(outDate + " " + outTime).format("MMM DD, YYYY HH:mm:ss");
-      var end = moment(inDate + " " + inTime).format("MMM DD, YYYY HH:mm:ss");
+      var start = moment(outDate + " " + outTime).format("MMM D, YYYY HH:mm:ss");
+      var end = moment(inDate + " " + inTime).format("MMM D, YYYY HH:mm:ss");
 
       //Subtracks the difference between the end and start time
 
@@ -347,7 +350,7 @@ $(function() {
     .on('changeDate', function(ev) {
       $('#button').datepicker('hide');
       var buttonVal = ev.date.valueOf();
-      buttonVal = moment(buttonVal).format("MMM DD, YYYY");
+      buttonVal = moment(buttonVal).format("MMM D, YYYY");
       selectedDate = buttonVal;
       console.log(buttonVal);
 
